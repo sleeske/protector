@@ -1,0 +1,5 @@
+.vscode/
+*.ipynb
+.python-version
+__pycache__/
+*.pyc

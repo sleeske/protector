@@ -1,0 +1,9 @@
+{% extends 'resources/base.html' %}
+{% block title %}Add new resource{% endblock %}
+
+{% block content %}
+<form enctype="multipart/form-data" method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Protect!">
+</form>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'resources/base.html' %}
+{% block title %}Resource added{% endblock %}
+
+{% block content %}
+<h3>Your resource has been successfully saved!</h3>
+
+<p>To access it visit the link below and enter the password. The link expires in 24 hours</p>
+<p>Link: {{ authorization_url }}</p>
+<p>Password: {{ password }}</p>
+{% endblock %}

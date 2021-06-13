@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}{% endblock %}</title>
+</head>
+
+<body>
+    <p><a href="{% url 'resources:index'%}">Click here to go to the homepage</a></p>
+    {% block content %}
+    {% endblock %}
+</body>
+
+</html>

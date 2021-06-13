@@ -1,0 +1,13 @@
+{% extends 'resources/base.html' %}
+
+{% block title %}Resource Protector{% endblock %}
+
+{% block content %}
+<h3>Hello!</h3>
+<p>If you're already logged in, click <a href="{% url 'resources:create' %}">here</a> to add a protected
+    resource.
+</p>
+<p>Alternatively, go <a href="{% url 'resources:api-create' %}">here</a> to try out the API.</p>
+<p>Or click <a href="{% url 'resources:api-stats' %}">here</a> to explore the stats.</p>
+<p>You can log in using the <a href="{% url 'admin:index' %}">admin panel</a>.</p>
+{% endblock %}

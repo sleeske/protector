@@ -1,16 +1,19 @@
 from django.utils.crypto import get_random_string
-from rest_framework import status
+from rest_framework import serializers, status
 from rest_framework.generics import CreateAPIView, GenericAPIView, RetrieveAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
+from resources.errors.api_errors import RulesetValidationAPIError
+from resources.errors.internal_errors import ResourcePasswordMismatch, RulesetViolation
 from resources.forms.api_forms import (
     ProtectedResourceAuthorizationSerializer,
     ProtectedResourceCreateSerializer,
 )
 from resources.models import ProtectedResource
 from resources.services import (
-    create_protected_resource_with_username_and_password,
+    check_resource_password,
+    create_protected_resource_with_user_and_password,
     increment_visitors_count,
     is_resource_expired,
 )
@@ -26,9 +29,12 @@ class ProtectedResourceCreateAPIView(CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        obj = create_protected_resource_with_username_and_password(
-            self.request.user, password_factory(), **serializer.validated_data
-        )
+        try:
+            obj = create_protected_resource_with_user_and_password(
+                self.request.user, password_factory(), **serializer.validated_data
+            )
+        except RulesetViolation as error:
+            raise RulesetValidationAPIError(error.errors)
 
         return Response(
             data={
@@ -54,6 +60,12 @@ class ProtectedResourceAuthorizationAPIView(GenericAPIView):
 
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        try:
+            check_resource_password(instance, **serializer.validated_data)
+        except ResourcePasswordMismatch:
+            raise serializers.ValidationError({"errors": "Invalid password."})
+
         increment_visitors_count(instance)
 
         return Response(serializer.data)

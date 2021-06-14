@@ -2,13 +2,20 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from django.conf import settings
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import check_password, make_password
 from django.utils import timezone
 
+from resources.errors.internal_errors import ResourcePasswordMismatch
 from resources.models import ProtectedResource
+from resources.validators.decorators import ruleset
+from resources.validators.rulesets import (
+    change_resource_password_ruleset,
+    create_protected_resource_with_user_and_password_ruleset,
+)
 
 
-def create_protected_resource_with_username_and_password(
+@ruleset(create_protected_resource_with_user_and_password_ruleset)
+def create_protected_resource_with_user_and_password(
     user, raw_password, **kwargs
 ) -> ProtectedResource:
     kwargs["password"] = make_password(raw_password)
@@ -17,15 +24,19 @@ def create_protected_resource_with_username_and_password(
     return resource
 
 
-def increment_visitors_count(resource: ProtectedResource) -> ProtectedResource:
+def increment_visitors_count(resource) -> ProtectedResource:
     resource.visits += 1
     resource.save(update_fields=["visits"])
     return resource
 
 
-def change_resource_password(
-    resource: ProtectedResource, raw_password: str
-) -> ProtectedResource:
+def check_resource_password(resource, password) -> None:
+    if not check_password(password, resource.password):
+        raise ResourcePasswordMismatch
+
+
+@ruleset(change_resource_password_ruleset)
+def change_resource_password(resource, raw_password) -> ProtectedResource:
     resource.password = make_password(raw_password)
     resource.save(update_fields=["password"])
     return resource

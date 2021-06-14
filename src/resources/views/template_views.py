@@ -2,11 +2,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http.response import HttpResponse, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.views.generic.base import RedirectView, View
-from django.views.generic.detail import (
-    SingleObjectMixin,
-    SingleObjectTemplateResponseMixin,
-)
-from django.views.generic.edit import FormView, ModelFormMixin, ProcessFormView
+from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.edit import FormView
+from resources.errors.internal_errors import ResourcePasswordMismatch, RulesetViolation
 
 from resources.forms.template_forms import (
     ProtectedResourceAuthorizationForm,
@@ -14,7 +12,8 @@ from resources.forms.template_forms import (
 )
 from resources.models import ProtectedResource
 from resources.services import (
-    create_protected_resource_with_username_and_password,
+    check_resource_password,
+    create_protected_resource_with_user_and_password,
     increment_visitors_count,
     is_resource_expired,
 )
@@ -32,9 +31,14 @@ class ProtectedResourceCreateView(LoginRequiredMixin, FormView):
     success_template_name = "resources/created.html"
 
     def form_valid(self, form):
-        obj = create_protected_resource_with_username_and_password(
-            self.request.user, password_factory(), **form.cleaned_data
-        )
+        try:
+            obj = create_protected_resource_with_user_and_password(
+                self.request.user,
+                password_factory(),
+                **form.cleaned_data,
+            )
+        except RulesetViolation as error:
+            return self.handle_service_error(error, form)
 
         context = {
             "password": obj._password,
@@ -52,6 +56,11 @@ class ProtectedResourceCreateView(LoginRequiredMixin, FormView):
     def get_success_template(self):
         return self.success_template_name
 
+    def handle_service_error(self, error, form):
+        for error in error.errors:
+            form.add_error(error.field, error.error_msg)
+        return self.form_invalid(form)
+
 
 class ResourceAccessControlMixin:
     def dispatch(self, request, *args, **kwargs):
@@ -65,9 +74,8 @@ class ResourceAccessControlMixin:
 
 class ProtectedResourceAuthorizationView(
     ResourceAccessControlMixin,
-    SingleObjectTemplateResponseMixin,
-    ModelFormMixin,
-    ProcessFormView,
+    SingleObjectMixin,
+    FormView,
 ):
     form_class = ProtectedResourceAuthorizationForm
     template_name = "resources/authorize.html"
@@ -76,14 +84,15 @@ class ProtectedResourceAuthorizationView(
     slug_field = "access_id"
     slug_url_kwarg = "access_id"
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["instance"] = self.object
-        return kwargs
-
     def form_valid(self, form):
-        increment_visitors_count(self.object)
-        return redirect(self.object)
+        try:
+            check_resource_password(self.object, **form.cleaned_data)
+        except ResourcePasswordMismatch as e:
+            form.add_error(e.field, e.error_msg)
+            return self.form_invalid(form)
+        else:
+            increment_visitors_count(self.object)
+            return redirect(self.object)
 
 
 class ProtectedURLRedirectView(

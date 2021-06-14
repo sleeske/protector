@@ -1,7 +1,6 @@
 import uuid
 
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -37,15 +36,6 @@ class ProtectedResource(models.Model):
     class Meta:
         verbose_name = _("protected resource")
         verbose_name_plural = _("protected resources")
-
-    def clean(self):
-        if not self.protected_url and not self.protected_file:
-            raise ValidationError("Provice an URL or a file to protect.")
-
-        if self.protected_url and self.protected_file:
-            raise ValidationError(
-                "Provice either an URL or a file to protect, not both."
-            )
 
     def save(self, *args, **kwargs):
         self.resource_type = TYPE_URL if self.protected_url else TYPE_FILE

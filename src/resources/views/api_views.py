@@ -14,6 +14,7 @@ from resources.services import (
     increment_visitors_count,
     is_resource_expired,
 )
+from resources.utils.crypto import password_factory
 
 
 class ProtectedResourceCreateAPIView(CreateAPIView):
@@ -26,7 +27,7 @@ class ProtectedResourceCreateAPIView(CreateAPIView):
         serializer.is_valid(raise_exception=True)
 
         obj = create_protected_resource_with_username_and_password(
-            self.request.user, **serializer.validated_data
+            self.request.user, password_factory(), **serializer.validated_data
         )
 
         return Response(

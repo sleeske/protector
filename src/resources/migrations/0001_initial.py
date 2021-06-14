@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('resource_type', models.PositiveSmallIntegerField(choices=[(0, 'url'), (1, 'file')])),
                 ('protected_url', models.URLField(blank=True, verbose_name='URL')),
-                ('protected_file', models.FileField(blank=True, upload_to=resources.utils.create_uuid_filename, verbose_name='file')),
+                ('protected_file', models.FileField(blank=True, upload_to=resources.utils.files.create_uuid_filename, verbose_name='file')),
                 ('visits', models.IntegerField(default=0)),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],

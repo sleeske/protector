@@ -4,15 +4,13 @@ from typing import Optional
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
-from django.utils.crypto import get_random_string
 
 from resources.models import ProtectedResource
 
 
 def create_protected_resource_with_username_and_password(
-    user, **kwargs
+    user, raw_password, **kwargs
 ) -> ProtectedResource:
-    raw_password = get_random_string()
     kwargs["password"] = make_password(raw_password)
     resource = ProtectedResource.objects.create(user=user, **kwargs)
     resource._password = raw_password

@@ -18,7 +18,8 @@ from resources.services import (
     increment_visitors_count,
     is_resource_expired,
 )
-from resources.utils import chunked
+from resources.utils.files import chunked
+from resources.utils.crypto import password_factory
 
 
 def index(request, *args, **kwargs):
@@ -32,7 +33,7 @@ class ProtectedResourceCreateView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         obj = create_protected_resource_with_username_and_password(
-            self.request.user, **form.cleaned_data
+            self.request.user, password_factory(), **form.cleaned_data
         )
 
         context = {

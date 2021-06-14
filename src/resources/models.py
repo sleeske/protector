@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from resources.constants import RESOURCE_TYPES, TYPE_FILE, TYPE_URL
 from resources.managers import ProtectedResourceQuerySet
-from resources.utils import create_uuid_filename
+from resources.utils.files import create_uuid_filename
 
 
 class ProtectedResource(models.Model):

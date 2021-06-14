@@ -44,13 +44,13 @@ def change_resource_password(resource, raw_password) -> ProtectedResource:
 
 def is_resource_expired(
     resource: ProtectedResource,
-    date_time: Optional[datetime] = None,
+    current_time: Optional[datetime] = None,
     resource_ttl: Optional[timedelta] = None,
 ) -> bool:
-    if not date_time:
-        date_time = timezone.localtime()
+    if not current_time:
+        current_time = timezone.localtime()
 
     if not resource_ttl:
-        resource_ttl = settings.RESOURCE_DEFAULT_TTL
+        resource_ttl = timedelta(hours=settings.RESOURCE_DEFAULT_TTL_HOURS)
 
-    return resource.created + resource_ttl < date_time
+    return current_time - resource_ttl > resource.created

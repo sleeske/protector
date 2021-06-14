@@ -6,13 +6,24 @@ class ResourceError(Exception):
 
 
 class RuleViolation(ResourceError):
-    def __init__(self, field, error_msg, *args):
-        super().__init__(*args)
-        self.field = field
-        self.error_msg = error_msg
+    field = None
+    error_msg = ""
 
-    def __str__(self):
-        return f"{self.field}: {self.msg}"
+
+class AnonymousUserViolation(RuleViolation):
+    error_msg = "Anonymous user can't add a resource."
+
+
+class EmptyPasswordViolation(RuleViolation):
+    error_msg = "Can't create a resource without a password."
+
+
+class TooManyResourcesProvidedViolation(RuleViolation):
+    error_msg = "Provide an URL or a file to protect."
+
+
+class NotEnoughResourcesProvidedViolation(RuleViolation):
+    error_msg = "Provice either an URL or a file to protect, not both."
 
 
 class RulesetViolation(ResourceError):

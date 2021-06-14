@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-from datetime import timedelta
 import environ
 
 root = environ.Path(__file__) - 2
@@ -139,4 +138,4 @@ REST_FRAMEWORK = {
 }
 
 DEFAULT_PASSWORD_LENGTH = 15
-RESOURCE_DEFAULT_TTL = timedelta(hours=24)
+RESOURCE_DEFAULT_TTL_HOURS = 24

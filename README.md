@@ -35,9 +35,9 @@ docker-compose up
 The startup should be almost instantaneous. You might also notice that any unapplied migrations are being executed. That's what the `bootstrap` management command takes care of. For your convenience it also tries to create a superuser, when in DEBUG mode. The defaul credentials are `admin`:`test123`.
 
 The home page is available at http://localhost:8000/ and the admin resides at the [/admin](http://localhost:8000/admin).
-To make life easier the home page has links to both to Form-based views and API views (including statistics endpoint)
+To make life easier the home page has links to both Form-based views and API views (including statistics endpoint).
 
-The default password for Protected Resource can be changed in the admin, on per-object basis.
+The default password for Protected Resource can be changed per-object in the admin.
 
 And that's all folks, have fun exploring both the code and the app! (Although the latter might not be that fun, see [TODOS](#todos) no. 3)
 

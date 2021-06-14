@@ -9,7 +9,7 @@ class ProtectedResourceCreateSerializer(serializers.Serializer):
 
 
 class ProtectedResourceAuthorizationSerializer(serializers.ModelSerializer):
-    resource_type_display = serializers.CharField(
+    resource_type = serializers.CharField(
         source="get_resource_type_display", read_only=True
     )
     resource_link = serializers.SerializerMethodField(read_only=True)
@@ -19,12 +19,10 @@ class ProtectedResourceAuthorizationSerializer(serializers.ModelSerializer):
         fields = (
             "password",
             "resource_type",
-            "resource_type_display",
             "resource_link",
         )
         read_only_fields = (
             "resource_type",
-            "resource_type_display",
             "resource_link",
         )
         extra_kwargs = {"password": {"write_only": True}}

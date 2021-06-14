@@ -6,7 +6,7 @@ from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import FormView
 from resources.errors.internal_errors import ResourcePasswordMismatch, RulesetViolation
 
-from resources.forms.template_forms import (
+from resources.forms.view_forms import (
     ProtectedResourceAuthorizationForm,
     ProtectedResourceCreateForm,
 )

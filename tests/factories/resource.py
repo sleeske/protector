@@ -13,6 +13,6 @@ class ProtectedResourceFactory(factory.django.DjangoModelFactory):
         model = ProtectedResource
 
 
-class ProtectedURLFactory(ProtectedResourceFactory):
+class ProtectedURLResourceFactory(ProtectedResourceFactory):
     protected_url = factory.Faker("url")
     resource_type = TYPE_URL

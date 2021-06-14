@@ -6,11 +6,11 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from pytest_factoryboy import register
 from resources.models import ProtectedResource
 
-from .factories.resource import ProtectedURLFactory
+from .factories.resource import ProtectedURLResourceFactory
 from .factories.user import UserFactory
 
 register(UserFactory)
-register(ProtectedURLFactory)
+register(ProtectedURLResourceFactory)
 
 
 @pytest.fixture
@@ -22,9 +22,9 @@ def lazy_simple_in_memory_file():
 
 
 @pytest.fixture
-def lazy_resource_with_custom_created(protected_url_factory):
+def lazy_resource_with_custom_created(protected_url_resource_factory):
     def wrapper(created: datetime):
-        resource = protected_url_factory()
+        resource = protected_url_resource_factory()
         ProtectedResource.objects.filter(pk=resource.pk).update(created=created)
         resource.refresh_from_db()
         return resource

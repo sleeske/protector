@@ -7,10 +7,12 @@ from rest_framework.test import APIClient
 
 
 @pytest.mark.django_db
-def test_anonymous_user_can_access_resource_authorization_view(protected_url_factory):
+def test_anonymous_user_can_access_resource_authorization_view(
+    protected_url_resource_factory,
+):
     raw_password = "test124"
 
-    resource = protected_url_factory(password=make_password(raw_password))
+    resource = protected_url_resource_factory(password=make_password(raw_password))
     client = APIClient()
 
     response = client.post(

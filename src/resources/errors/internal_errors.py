@@ -10,19 +10,19 @@ class RuleViolation(ResourceError):
     error_msg = ""
 
 
-class AnonymousUserViolation(RuleViolation):
+class AnonymousUserNotAuthorized(RuleViolation):
     error_msg = "Anonymous user can't add a resource."
 
 
-class EmptyPasswordViolation(RuleViolation):
+class PasswordNoneOrEmpty(RuleViolation):
     error_msg = "Can't create a resource without a password."
 
 
-class TooManyResourcesProvidedViolation(RuleViolation):
+class TooManyFieldsProvided(RuleViolation):
     error_msg = "Provide an URL or a file to protect."
 
 
-class NotEnoughResourcesProvidedViolation(RuleViolation):
+class NotEnoughFieldsProvided(RuleViolation):
     error_msg = "Provice either an URL or a file to protect, not both."
 
 

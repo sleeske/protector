@@ -1,28 +1,41 @@
 version: "3.8"
 
-# x-base: &datatap-base
-#     image: datatap_backend
-#     volumes:
-#         - ../datatap/:/app/datatap/:cached
-#         - ../conf/:/app/conf/:cached
-#         - datatap-storage-data:/var/lib/datatap:delegated
-#         - datatap-storage-logs:/var/log/datatap:delegated
-#     depends_on:
-#         - postgres
-#         - redis
-#     env_file: ./.env
-#     restart: "on-failure"
-#     networks:
-#         - default
+x-base: &base
+    image: protector_backend
+    volumes:
+        - .:/project/app:cached
+        - static:/project/static
+        - media:/project/media
+    depends_on:
+        - postgres
+    env_file: .env
+    restart: "on-failure"
 
 services:
     postgres:
         image: postgres:13.3-alpine
-        env_file: ./docker/.postgres.env
+        environment:
+            - POSTGRES_PASSWORD=postgres
+            - PGDATA=/var/lib/postgresql/data
         volumes:
-            - protector-postgresql-data:/var/lib/postgresql/data:delegated
+            - pg-data:/var/lib/postgresql/data:delegated
         ports:
             - "5432:5432"
 
+    django:
+        <<: *base
+        build:
+            context: .
+            dockerfile: ./docker/Dockerfile
+        command: python src/manage.py runserver 0:8000
+        ports:
+            - "8000:8000"
+
+    bootstrapper:
+        <<: *base
+        command: python src/manage.py bootstrap
+
 volumes:
-    protector-postgresql-data: {}
+    pg-data: {}
+    static: {}
+    media: {}

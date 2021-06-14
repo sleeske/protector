@@ -9,15 +9,13 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+from pathlib import Path
 
 import environ
 
-root = environ.Path(__file__) - 2
-
 env = environ.Env()
-env.read_env(root(".env"))
 
-BASE_DIR = root()
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 DEBUG = env.bool("DEBUG", False)
 SECRET_KEY = env("SECRET_KEY")
@@ -36,6 +34,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "conf",
     "resources.apps.ResourcesConfig",
     "tracking.apps.TrackingConfig",
 ]
@@ -118,10 +117,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = env("STATIC_URL", default="/static/")
-STATIC_ROOT = env("STATIC_ROOT", default=(root - 1)("static"))
+STATIC_ROOT = env("STATIC_ROOT", default=BASE_DIR.parent.parent / "static")
 
 MEDIA_URL = env("MEDIA_URL", default="/media/")
-MEDIA_ROOT = env("MEDIA_ROOT", default=(root - 1)("media"))
+MEDIA_ROOT = env("MEDIA_ROOT", default=BASE_DIR.parent.parent / "media")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
